@@ -1,0 +1,14 @@
+/opt/log/sausage-store-backend.log 
+/opt/log/sausage-store-frontend.log
+{ 
+  compress
+  dateext
+  hourly
+  missingok
+  notifempty
+  rotate 3
+  size 10M
+  postrotate
+    date > /opt/student_rotate.log
+  endscript
+}

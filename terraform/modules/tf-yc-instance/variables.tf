@@ -42,3 +42,18 @@ variable "subnet_id" {
   sensitive   = true
   nullable    = false
 }
+
+variable "instance_name" {
+  type        = string
+  description = "Compute instance name"
+  sensitive   = false
+  nullable    = false
+}
+
+variable "preemptible" {
+  type        = bool
+  default     = false
+  description = "Specifies if the instance is preemptible"
+  sensitive   = false
+  nullable    = false
+}

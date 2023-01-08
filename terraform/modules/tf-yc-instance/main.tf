@@ -1,5 +1,5 @@
 resource "yandex_compute_instance" "vm-1" {
-  name        = "chapter5-lesson2-std-011-009"
+  name        = var.instance_name
   zone        = var.instance_zone
   platform_id = var.platform_id
 
@@ -25,6 +25,6 @@ resource "yandex_compute_instance" "vm-1" {
   }
 
   scheduling_policy {
-    preemptible = true
+    preemptible = var.preemptible
   }
 }

@@ -1,0 +1,8 @@
+---
+# defaults file for frontend
+user: www-data
+group: www-data
+
+dirs:
+  front_dir: /var/www-data/dist/
+  log_dir: /var/log/sausage-store

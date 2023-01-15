@@ -1,0 +1,9 @@
+---
+# defaults file for backend
+user: jarservice
+group: jarusers
+
+dirs:
+  jar_dir: /opt/sausage-backend
+  log_dir: /var/log/sausage-store
+  report_dir: /var/www-data/htdocs

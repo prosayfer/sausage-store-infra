@@ -1,0 +1,6 @@
+backend_version: "1.0.355635"
+frontend_version: "1.0.355140"
+
+nexus:
+  username: "{{ vault_nexus_username }}"
+  password: "{{ vault_nexus_password }}"

@@ -1,0 +1,64 @@
+---
+# tasks file for backend
+- name: Intall packages
+  block:
+    - name: Install java
+      apt:
+        name: "openjdk-16-jdk"
+
+    - name: Install pip
+      apt:
+        name: "python3-pip"
+
+    - name: Install lxml
+      pip: 
+        name: "lxml"  
+
+- name: Setup users
+  block:
+    - name: Add group
+      group:
+        name: "{{ group }}"
+
+    - name: Add user
+      user:
+        name: "{{ user }}"
+        group: "{{ group }}"
+        create_home: "no"
+        shell: "/bin/bash"
+
+- name: Create work directories
+  file:
+    path: "{{ item.value }}"
+    state: "directory"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+  loop: "{{ dirs | dict2items }}"  
+
+- name: Download sausage-store-backend
+  maven_artifact:
+    dest: "{{ dirs.jar_dir }}/sausage-store-{{ backend_version }}.jar"
+    repository_url: "https://nexus.praktikum-services.ru/repository/sausage-store-pronin-konstantin-backend"
+    username: "{{ nexus.username }}"
+    password: "{{ nexus.password }}"
+    group_id: "com.yandex.practicum.devops"
+    artifact_id: "sausage-store"
+    version: "{{ backend_version }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+  
+- name: Create systemd service
+  template:
+    src: "sausage-store-backend.service.j2"
+    dest: "/etc/systemd/system/sausage-store-backend.service"
+
+- name: Reload systemd 
+  systemd:
+    daemon_reload: "yes"
+
+- name: Start service
+  service:
+    name: "sausage-store-backend"
+    state: "started"

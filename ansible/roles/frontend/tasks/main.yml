@@ -1,0 +1,64 @@
+---
+# tasks file for frontend
+- name: Intall packages
+  block:
+    - name: Install node.js
+      shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - && sudo apt-get install -y nodejs
+
+    - name: Install http server
+      shell: npm install -g http-server
+
+- name: Setup users
+  block:
+    - name: Add group
+      group:
+        name: "{{ group }}"
+
+    - name: Add user
+      user:
+        name: "{{ user }}"
+        group: "{{ group }}"
+        create_home: "no"
+        shell: "/bin/bash" 
+
+- name: Create work directories
+  file:
+    path: "{{ item.value }}"
+    state: "directory"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+  loop: "{{ dirs | dict2items }}" 
+
+- name: Download sausage-store-frontend
+  get_url:
+    url: "https://nexus.praktikum-services.ru/repository/sausage-store-pronin-konstantin-frontend/sausage-store/{{ frontend_version }}/sausage-store-{{ frontend_version }}.tar.gz"
+    url_username: "{{ nexus.username }}"
+    url_password: "{{ nexus.password }}"
+    dest: "{{ dirs.front_dir }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+
+- name: Extract sausage-store-frontend  
+  unarchive:
+    src: "{{ dirs.front_dir }}/sausage-store-{{ frontend_version }}.tar.gz"
+    dest: "{{ dirs.front_dir }}"
+    remote_src: "yes"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+
+- name: Create systemd service
+  template:
+    src: "sausage-store-frontend.service.j2"
+    dest: "/etc/systemd/system/sausage-store-frontend.service"
+
+- name: Reload systemd 
+  systemd:
+    daemon_reload: "yes"
+
+- name: Start service
+  service:
+    name: "sausage-store-frontend"
+    state: "started"

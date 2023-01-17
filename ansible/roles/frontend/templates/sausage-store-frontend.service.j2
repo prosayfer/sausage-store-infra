@@ -1,0 +1,14 @@
+[Unit]
+Description=Frontend for sausage store
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+User={{ user }}
+ExecStart=http-server {{ dirs.front_dir }}/frontend -p 8081 --proxy http://localhost:8080
+StandardOutput=file:{{ dirs.log_dir }}/sausage-store-frontend.log
+Restart=always    
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+[Unit]
+Description=Backend for sausage store
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+User={{ user }}
+ExecStart=java -jar {{ dirs.jar_dir }}/sausage-store-{{ backend_version }}.jar
+Environment="LOG_PATH={{ dirs.log_dir }}"
+Environment="REPORT_PATH={{ dirs.report_dir }}"
+StandardOutput=file:{{ dirs.log_dir }}/sausage-store-backend.log
+Restart=always    
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-report
+  labels:
+    app: backend-report
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend-report
+  template:
+    metadata:
+      labels:
+        app: backend-report
+    spec:
+      imagePullSecrets:
+        - name: docker-config-secret
+      containers:
+        - name: backend-report
+          image: gitlab.praktikum-services.ru:5050/std-011/sausage-store/sausage-report:1.0.483672
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault
+                  key: vault_token
+            - name: DB
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: mongo_url
+          ports:
+            - name: backend-report
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 6
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "200m"

@@ -1,0 +1,23 @@
+stages:
+  - "deploy"
+
+k8s-deploy:
+  stage: "deploy"
+  rules:
+    - changes:
+        - kubernetes/*   
+  environment:
+    name: kubernetes
+  image:
+    name: bitnami/kubectl:latest
+  before_script:
+    - echo ${KUBECONFIG} > ~/.kube/config
+  script:
+    - cd kubernetes
+    - kubectl config use-context student-context
+    - kubectl apply -f backend
+    - kubectl apply -f backend-report
+    - kubectl apply -f frontend
+    - kubectl apply -f ingress
+  after_script:
+    - rm ~/.kube/config

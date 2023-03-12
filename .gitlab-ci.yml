@@ -1,0 +1,12 @@
+stages:
+  - module-pipelines
+
+kubernetes:
+  stage: module-pipelines
+  trigger:
+    include:
+      - local: "kubernetes/.gitlab-ci.yml"
+    strategy: depend
+  rules:
+    - changes:
+        - kubernetes/**/*

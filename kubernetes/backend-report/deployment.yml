@@ -6,6 +6,7 @@ metadata:
     app: backend-report
 spec:
   replicas: 1
+  revisionHistoryLimit: 15
   strategy:
     type: Recreate
   selector:
@@ -48,3 +49,24 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "200m"
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-report-hpa
+  labels:
+    app: backend-report-hpa
+spec:
+  minReplicas: 1
+  maxReplicas: 5
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-report
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 75

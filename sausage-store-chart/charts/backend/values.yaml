@@ -1,0 +1,62 @@
+# Default values for backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deployment:
+  replicaCount: 1
+  historyLimit: 15
+  podsMaxUnavailable: 1
+  podsMaxSurge: 20%
+
+image:
+  repository: gitlab.praktikum-services.ru:5050/std-011/sausage-store/sausage-backend
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: 
+  name: docker-config-secret
+  key: .dockerconfigjson
+  value: ewoJImF1dGhzIjogewoJCSJnaXRsYWIucHJha3Rpa3VtLXNlcnZpY2VzLnJ1OjUwNTAiOiB7CgkJCSJhdXRoIjogIlpYSmhhMmh0WlhSNmVXRnViM1k2TlZrNWNESnlSM05RUVcxSFVIST0iCgkJfQoJfQp9
+  type: kubernetes.io/dockerconfigjson
+
+vaultSecrets:
+  name: vault
+  key: vault_token
+  value: aHZzLkNBRVNJTC1OM0c4YkFMSjJjanVoZUU3eTlyWl9pUzFQd25YQkQ1a2lHY3I1UGVUUUdoNEtIR2gyY3k1Uk5sQk5URTlhVUVGS1IxWlhhMmhaVURsSGVIcE1iVlE=
+  type: Opaque
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: std-011-009.k8s.praktikum-services.tech
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 1024Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minCpu: 0m
+  maxCpu: 1
+  minMemory: 0Mi
+  maxMemory: 1024Mi
+  mode: "Auto"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

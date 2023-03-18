@@ -1,0 +1,24 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "backend.fullname" . }}
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: Deployment
+    name: {{ include "backend.fullname" . }}
+  updatePolicy:
+    updateMode: {{ .Values.autoscaling.mode }}
+  resourcePolicy:
+    containerPolicies:
+      - containerName: "*"
+        minAllowed:
+          cpu: {{ .Values.autoscaling.minCpu }}
+          memory: {{ .Values.autoscaling.minMemory }}
+        maxAllowed:
+          cpu: {{ .Values.autoscaling.maxCpu }}
+          memory: {{ .Values.autoscaling.maxMemory }}
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+{{- end }}        

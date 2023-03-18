@@ -4,7 +4,6 @@ stages:
 k8s-deploy:
   stage: "deploy"
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - changes:
         - kubernetes/*   
   environment:

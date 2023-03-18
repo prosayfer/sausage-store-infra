@@ -1,0 +1,60 @@
+# Default values for backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deployment:
+  replicaCount: 1
+  historyLimit: 15
+  podsMaxUnavailable: 1
+  podsMaxSurge: 20%
+
+image:
+  repository: gitlab.praktikum-services.ru:5050/std-011/sausage-store/sausage-report
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: 
+  name: docker-config-secret
+  key: .dockerconfigjson
+  value: ewoJImF1dGhzIjogewoJCSJnaXRsYWIucHJha3Rpa3VtLXNlcnZpY2VzLnJ1OjUwNTAiOiB7CgkJCSJhdXRoIjogIlpYSmhhMmh0WlhSNmVXRnViM1k2TlZrNWNESnlSM05RUVcxSFVIST0iCgkJfQoJfQp9
+  type: kubernetes.io/dockerconfigjson
+
+mongoSecrets:
+  name: mongo
+  key: mongo_url
+  value: bW9uZ29kYjovL2twcm9uaW46VGVzdHVzcjEyMzRAcmMxYS14MnU3cGgzMnY0NXk1cmI1Lm1kYi55YW5kZXhjbG91ZC5uZXQ6MjcwMTgva3Byb25pbj90bHM9dHJ1ZSZ0bHNDYUZpbGU9WWFuZGV4SW50ZXJuYWxSb290Q0EuY3J0
+  type: Opaque
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: std-011-009.k8s.praktikum-services.tech
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 1024Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

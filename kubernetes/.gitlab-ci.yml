@@ -5,7 +5,8 @@ k8s-deploy:
   stage: "deploy"
   rules:
     - changes:
-        - kubernetes/*   
+        - kubernetes/*
+      when: manual
   environment:
     name: kubernetes
   image:

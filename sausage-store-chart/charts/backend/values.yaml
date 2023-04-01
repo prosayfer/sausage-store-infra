@@ -12,7 +12,7 @@ image:
   repository: gitlab.praktikum-services.ru:5050/std-011/sausage-store/sausage-backend
   pullPolicy: IfNotPresent
 
-imagePullSecrets: 
+imagePullSecrets:
   name: docker-config-secret
   key: .dockerconfigjson
   value: ewoJImF1dGhzIjogewoJCSJnaXRsYWIucHJha3Rpa3VtLXNlcnZpY2VzLnJ1OjUwNTAiOiB7CgkJCSJhdXRoIjogIlpYSmhhMmh0WlhSNmVXRnViM1k2TlZrNWNESnlSM05RUVcxSFVIST0iCgkJfQoJfQp9
@@ -60,3 +60,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+podAnnotations:
+  prometheus.io/path: /actuator/prometheus
+  prometheus.io/port: "8080"
+  prometheus.io/scrape: "true"

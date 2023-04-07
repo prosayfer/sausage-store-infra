@@ -1,0 +1,53 @@
+apiVersion: v1
+data:
+  sausage-store.yaml: |
+    ---
+    groups:
+      - name: Sausage store rules
+        rules:
+        - alert: InstanceDown
+          expr: up{app_kubernetes_io_name="backend"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            project: "sausage_store"
+            component: "Backend"
+          annotations:
+            message: 'CRITICAL: Component {{ $labels.app_kubernetes_io_name }} of {{ $labels.app_kubernetes_io_instance }} application has been down for more than 1 minute.'
+        - alert: InternalServerError
+          expr: increase(http_server_requests_seconds_count{status="500", app_kubernetes_io_name="backend"}[5m]) > 0
+          labels:
+            severity: warning
+            project: "sausage_store"
+            component: "Backend"
+          annotations:
+            message: 'WARNING: 500 status returned by component {{ $labels.app_kubernetes_io_name }} of {{ $labels.app_kubernetes_io_instance }} application when requesting {{ $labels.uri }}.'
+        - alert: LatencyOverLimit
+          expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{uri="/api/orders", app_kubernetes_io_name="backend"}[5m])) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+            project: "sausage_store"
+            component: "Backend"
+          annotations:
+            message: 'WARNING: Increased latency when requesting {{ $labels.uri }} in the component {{ $labels.app_kubernetes_io_name }} of {{ $labels.app_kubernetes_io_instance }} application.'
+        - alert: LoadingMetricsError
+          expr: increase(http_server_requests_seconds_count{uri="/actuator/prometheus", status!~"^2\\d{2}$", app_kubernetes_io_name="backend"}[2m]) > 0
+          for: 2m
+          labels:
+            severity: error
+            project: "sausage_store"
+            component: "Backend"
+          annotations:
+            message: 'ERROR: Cannot load metrics for the component {{ $labels.app_kubernetes_io_name }} of {{ $labels.app_kubernetes_io_instance }} application.'             
+  
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: prometheus
+    meta.helm.sh/release-namespace: std-011-009
+  labels:
+    app: prometheus
+    app.kubernetes.io/managed-by: Helm
+  name: prometheus-rules
+  namespace: std-011-009

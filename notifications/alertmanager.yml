@@ -1,0 +1,34 @@
+apiVersion: v1
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 1m
+
+    route:
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 30m
+      receiver: "telegram"
+      routes:
+        - receiver: "telegram"
+          group_wait: 10s
+          match_re:
+            severity: critical|warning
+          continue: true
+    receivers:
+    - name: "telegram"
+      telegram_configs:
+      - send_resolved: true
+        bot_token: '5933756043:AAE8JLL5KIzgrNBeTP5e-1bkbJy4YRoeGjs'
+        chat_id: -1001813217062
+        message: "{{ range .Alerts }}{{ .Annotations.message }}\n{{ end }}"
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: alertmanager
+    meta.helm.sh/release-namespace: std-011-009
+  labels:
+    app: alertmanager
+    app.kubernetes.io/managed-by: Helm
+  name: alertmanager
+  namespace: std-011-009
